@@ -6,6 +6,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--Rubric B Test
+SELECT decimal_to_money(amount) from payment
+
 
 --Rubric C--
 --Summary Table--
@@ -17,6 +20,9 @@ CREATE TABLE summary_table (
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
+--Rubric C Test
+SELECT * FROM summary_table;
+
 --Detailed Table--
 CREATE TABLE detailed_table (
     category_id INT,
@@ -27,6 +33,9 @@ CREATE TABLE detailed_table (
     PRIMARY KEY (category_id),
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
+
+--Rubric C Test
+SELECT * FROM detailed_table;
 
 
 
@@ -52,7 +61,13 @@ LEFT JOIN
 GROUP BY 
     c.category_id, c.name;
 
-
+--Rubric D Test
+SELECT 
+    category_id, 
+    name, 
+    decimal_to_money(total_amount)
+FROM
+    summary_table;
 
 
 
@@ -79,6 +94,15 @@ LEFT JOIN
 GROUP BY 
     c.category_id, c.name;
 
+--Rubric D Test
+SELECT
+    category_id,
+    name, 
+    rental_count, 
+    decimal_to_money(amount),
+    inventory_count
+FROM 
+    detailed_table;
 
 --Rubric E--
 CREATE OR REPLACE FUNCTION update_summary_table_function()
