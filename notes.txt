@@ -1,0 +1,29 @@
+All queries work. Only issue is the create table statements. 
+The use of foreign keys makes it wonky. I might be able to 
+leave our the declaration of foreign keys. The primary keys don't
+screw with any of my testing. 
+
+Try submitting with the original code below;
+CREATE TABLE summary_table (
+    category_id INT,
+    name VARCHAR(50),
+    total_amount DECIMAL(10, 2),
+    PRIMARY KEY (category_id),
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
+);
+
+--Detailed Table--
+CREATE TABLE detailed_table (
+    category_id INT,
+    name VARCHAR(50),
+    rental_count INT,
+    amount DECIMAL(10, 2),
+    inventory_count INT,
+    PRIMARY KEY (category_id),
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
+);
+
+
+
+If that doesn't work, then remove the primary and
+foreign key references. 
