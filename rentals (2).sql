@@ -76,7 +76,6 @@ FROM
 
 
 --Detailed Table Data Entry--
--- Revised Data Entry for Detailed Table
 INSERT INTO detailed_table (category_id, rental_id, payment_id, name, sale_date, amount)
 SELECT 
     c.category_id, 
@@ -100,14 +99,16 @@ LEFT JOIN
 
 
 --Rubric D Test
-SELECT
-    category_id,
+SELECT 
+    category_id, 
+    rental_id, 
+    payment_id, 
     name, 
-    rental_count, 
-    decimal_to_money(amount),
-    inventory_count
+    sale_date, 
+    decimal_to_money(amount)
 FROM 
     detailed_table;
+
 
 --Rubric E--
 CREATE OR REPLACE FUNCTION update_summary_table_function()
