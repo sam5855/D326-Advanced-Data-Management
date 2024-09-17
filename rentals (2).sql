@@ -26,13 +26,17 @@ SELECT * FROM summary_table;
 --Detailed Table--
 CREATE TABLE detailed_table (
     category_id INT,
+    rental_id INT,
+    payment_id INT,
     name VARCHAR(50),
-    rental_count INT,
+    sale_date DATE,
     amount DECIMAL(10, 2),
-    inventory_count INT,
-    PRIMARY KEY (category_id),
-    FOREIGN KEY (category_id) REFERENCES category(category_id)
+    PRIMARY KEY (payment_id),  -- each sale is identified by a unique payment
+    FOREIGN KEY (category_id) REFERENCES category(category_id),
+    FOREIGN KEY (rental_id) REFERENCES rental(rental_id),
+    FOREIGN KEY (payment_id) REFERENCES payment(payment_id)
 );
+
 
 --Rubric C Test
 SELECT * FROM detailed_table;
@@ -72,13 +76,15 @@ FROM
 
 
 --Detailed Table Data Entry--
-INSERT INTO detailed_table (category_id, name, rental_count, amount, inventory_count)
+-- Revised Data Entry for Detailed Table
+INSERT INTO detailed_table (category_id, rental_id, payment_id, name, sale_date, amount)
 SELECT 
     c.category_id, 
+    r.rental_id,
+    p.payment_id,
     c.name, 
-    COUNT(r.rental_id) AS rental_count,
-    SUM(p.amount) AS amount,
-    COUNT(DISTINCT i.film_id) AS inventory_count
+    r.rental_date AS sale_date,
+    p.amount AS amount
 FROM 
     category c
 JOIN 
@@ -90,9 +96,8 @@ JOIN
 LEFT JOIN 
     rental r ON i.inventory_id = r.inventory_id
 LEFT JOIN 
-    payment p ON r.rental_id = p.rental_id
-GROUP BY 
-    c.category_id, c.name;
+    payment p ON r.rental_id = p.rental_id;
+
 
 --Rubric D Test
 SELECT
