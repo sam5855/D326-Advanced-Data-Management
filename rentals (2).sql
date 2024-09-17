@@ -117,7 +117,7 @@ BEGIN
     -- Update the total_amount in summary_table for the affected category
     UPDATE summary_table s
     SET total_amount = (
-        SELECT COALESCE(SUM(d.amount))
+        SELECT COALESCE(SUM(d.amount), 0)
         FROM detailed_table d
         WHERE d.category_id = NEW.category_id
     )
@@ -130,12 +130,15 @@ BEGIN
         WHERE category_id = NEW.category_id
     ) THEN
         INSERT INTO summary_table (category_id, name, total_amount)
-        VALUES (NEW.category_id, NEW.name, COALESCE(NEW.amount, 0));
+        VALUES (NEW.category_id, 
+                (SELECT name FROM category WHERE category_id = NEW.category_id), 
+                COALESCE(NEW.amount, 0));
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 CREATE TRIGGER update_summary_table_trigger
