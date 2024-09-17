@@ -160,14 +160,37 @@ BEGIN
     -- Step 2: Clear summary_table
     DELETE FROM summary_table;
 
-    -- Step 3: Repopulate detailed_table
-    INSERT INTO detailed_table (category_id, name, rental_count, amount, inventory_count)
+    -- Step 3: Repopulate detailed_table with every sale for every category
+    INSERT INTO detailed_table (category_id, name, rental_id, rental_date, amount, payment_date, inventory_count)
     SELECT 
         c.category_id, 
         c.name, 
-        COUNT(r.rental_id) AS rental_count,
-        COALESCE(SUM(p.amount), 0) AS amount,
+        r.rental_id,
+        r.rental_date,
+        COALESCE(p.amount, 0) AS amount,
+        p.payment_date,
         COUNT(DISTINCT i.film_id) AS inventory_count
+    FROM 
+        category c
+    JOIN 
+        film_category fc ON c.category_id = fc.category_id
+    JOIN 
+        film f ON fc.film_id = f.film_id
+    JOIN 
+        inventory i ON f.film_id = i.film_id
+    LEFT JOIN 
+        rental r ON i.inventory_id = r.inventory_id
+    LEFT JOIN 
+        payment p ON r.rental_id = p.rental_id
+    GROUP BY 
+        c.category_id, c.name, r.rental_id, r.rental_date, p.amount, p.payment_date;
+
+    -- Step 4: Repopulate summary_table by aggregating total sales for each category
+    INSERT INTO summary_table (category_id, name, total_amount)
+    SELECT 
+        c.category_id, 
+        c.name, 
+        COALESCE(SUM(p.amount), 0) AS total_amount
     FROM 
         category c
     JOIN 
@@ -183,31 +206,11 @@ BEGIN
     GROUP BY 
         c.category_id, c.name;
 
-    -- Step 4: Repopulate summary_table
-    INSERT INTO summary_table (category_id, name, total_amount)
-    SELECT 
-        c.category_id, 
-        c.name, 
-        SUM(p.amount) AS total_amount
-    FROM 
-        category c
-    JOIN 
-        film_category fc ON c.category_id = fc.category_id
-    JOIN 
-        film f ON fc.film_id = f.film_id
-    JOIN 
-        inventory i ON f.film_id = i.film_id
-    LEFT JOIN 
-        rental r ON i.inventory_id = r.inventory_id
-    LEFT JOIN 
-        payment p ON r.rental_id = p.rental_id
-    GROUP BY 
-        c.category_id, c.name
-    ON CONFLICT (category_id) DO NOTHING;
 END;
 $$;
 
 CALL refresh_tables();
+
 
 
 
