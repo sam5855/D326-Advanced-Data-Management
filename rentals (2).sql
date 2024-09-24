@@ -76,14 +76,16 @@ FROM
 
 
 --Detailed Table Data Entry--
-INSERT INTO detailed_table (category_id, rental_id, payment_id, name, sale_date, amount)
+INSERT INTO detailed_table (category_id, name, rental_id, payment_id, rental_date, amount, payment_date, inventory_count)
 SELECT 
     c.category_id, 
+    c.name, 
     r.rental_id,
     p.payment_id,
-    c.name, 
-    r.rental_date AS sale_date,
-    p.amount AS amount
+    r.rental_date,
+    COALESCE(p.amount, 0) AS amount,
+    p.payment_date,
+    COUNT(DISTINCT i.film_id) AS inventory_count
 FROM 
     category c
 JOIN 
@@ -95,7 +97,10 @@ JOIN
 LEFT JOIN 
     rental r ON i.inventory_id = r.inventory_id
 LEFT JOIN 
-    payment p ON r.rental_id = p.rental_id;
+    payment p ON r.rental_id = p.rental_id
+GROUP BY 
+    c.category_id, c.name, r.rental_id, r.rental_date, p.payment_id, p.amount, p.payment_date;
+
 
 
 --Rubric D Test
