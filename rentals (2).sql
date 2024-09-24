@@ -27,17 +27,16 @@ SELECT * FROM summary_table;
 CREATE TABLE detailed_table (
     category_id INT,
     rental_id INT,
-    payment_id INT NULL, -- Allow NULL values for payment_id
+    payment_id INT,
     name VARCHAR(50),
-    rental_date DATE,
+    sale_date DATE,
     amount DECIMAL(10, 2),
-    payment_date DATE,
-    inventory_count INT,
-    PRIMARY KEY (rental_id), -- Use rental_id as the primary key
+    PRIMARY KEY (category_id, rental_id, payment_id),  -- Composite primary key
     FOREIGN KEY (category_id) REFERENCES category(category_id),
     FOREIGN KEY (rental_id) REFERENCES rental(rental_id),
     FOREIGN KEY (payment_id) REFERENCES payment(payment_id)
 );
+
 
 
 
