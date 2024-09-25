@@ -83,9 +83,9 @@ INSERT INTO detailed_table (category_id, name, rental_id, payment_id, sale_date,
 SELECT 
     c.category_id, 
     c.name, 
-    r.rental_id,
+    r.rental_id,  -- Explicitly selecting rental_id from the rental table
     p.payment_id,
-    p.payment_date AS sale_date,  -- Assuming payment_date is the intended sale_date
+    p.payment_date AS sale_date,
     COALESCE(p.amount, 0) AS amount
 FROM 
     category c
@@ -96,9 +96,9 @@ JOIN
 JOIN 
     inventory i ON f.film_id = i.film_id
 LEFT JOIN 
-    rental r ON i.inventory_id = r.inventory_id
+    rental r ON i.inventory_id = r.inventory_id  -- Joining the rental table to get rental_id
 LEFT JOIN 
-    payment p ON r.rental_id = p.rental_id
+    payment p ON r.rental_id = p.rental_id  -- Joining the payment table to get payment_id
 GROUP BY 
     c.category_id, c.name, r.rental_id, p.payment_id, p.amount, p.payment_date;
 
