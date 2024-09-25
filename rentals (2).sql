@@ -15,8 +15,7 @@ SELECT decimal_to_money(amount) from payment
 CREATE TABLE summary_table (
     category_id INT,
     name VARCHAR(50),
-    total_amount DECIMAL(10, 2),
-    PRIMARY KEY (category_id),
+    total_amount DECIMAL(10, 2)
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
