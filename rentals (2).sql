@@ -167,15 +167,14 @@ BEGIN
     DELETE FROM summary_table;
 
     -- Step 3: Repopulate detailed_table with every sale for every category
-    INSERT INTO detailed_table (category_id, name, rental_id, rental_date, amount, payment_date, inventory_count)
+    INSERT INTO detailed_table (category_id, name, rental_id, payment_id, sale_date, amount)
     SELECT 
         c.category_id, 
         c.name, 
         r.rental_id,
-        r.rental_date,
-        COALESCE(p.amount, 0) AS amount,
-        p.payment_date,
-        COUNT(DISTINCT i.film_id) AS inventory_count
+        p.payment_id,
+        p.payment_date AS sale_date,  -- Assigning payment_date to sale_date
+        COALESCE(p.amount, 0) AS amount
     FROM 
         category c
     JOIN 
@@ -188,8 +187,10 @@ BEGIN
         rental r ON i.inventory_id = r.inventory_id
     LEFT JOIN 
         payment p ON r.rental_id = p.rental_id
+    WHERE 
+        p.payment_id IS NOT NULL  -- Ensure that payment_id is not null
     GROUP BY 
-        c.category_id, c.name, r.rental_id, r.rental_date, p.amount, p.payment_date;
+        c.category_id, c.name, r.rental_id, p.payment_id, p.payment_date, p.amount;
 
     -- Step 4: Repopulate summary_table by aggregating total sales for each category
     INSERT INTO summary_table (category_id, name, total_amount)
@@ -209,11 +210,14 @@ BEGIN
         rental r ON i.inventory_id = r.inventory_id
     LEFT JOIN 
         payment p ON r.rental_id = p.rental_id
+    WHERE 
+        p.payment_id IS NOT NULL  -- Ensure that payment_id is not null
     GROUP BY 
         c.category_id, c.name;
 
 END;
 $$;
+
 
 CALL refresh_tables();
 
