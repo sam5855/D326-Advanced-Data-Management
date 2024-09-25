@@ -15,7 +15,7 @@ SELECT decimal_to_money(amount) from payment
 CREATE TABLE summary_table (
     category_id INT,
     name VARCHAR(50),
-    total_amount DECIMAL(10, 2)
+    total_amount DECIMAL(10, 2),
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
@@ -30,7 +30,6 @@ CREATE TABLE detailed_table (
     name VARCHAR(50),
     sale_date DATE,
     amount DECIMAL(10, 2),
-    PRIMARY KEY (category_id, rental_id, payment_id),  -- Composite primary key
     FOREIGN KEY (category_id) REFERENCES category(category_id),
     FOREIGN KEY (rental_id) REFERENCES rental(rental_id),
     FOREIGN KEY (payment_id) REFERENCES payment(payment_id)
