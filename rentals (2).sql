@@ -93,9 +93,9 @@ JOIN
 JOIN 
     inventory i ON f.film_id = i.film_id
 LEFT JOIN 
-    rental r ON i.inventory_id = r.inventory_id  -- Joining the rental table to get rental_id
+    rental r ON i.inventory_id = r.inventory_id
 LEFT JOIN 
-    payment p ON r.rental_id = p.rental_id  -- Joining the payment table to get payment_id
+    payment p ON r.rental_id = p.rental_id 
 GROUP BY 
     c.category_id, c.name, r.rental_id, p.payment_id, p.amount, p.payment_date;
 
@@ -163,7 +163,7 @@ BEGIN
     -- Step 2: Clear summary_table
     DELETE FROM summary_table;
 
-    -- Step 3: Repopulate detailed_table with every sale for every category
+    -- Step 3: Repopulate detailed_table with every rental for every category
     INSERT INTO detailed_table (category_id, name, rental_id, payment_id, payment_date, amount)
     SELECT 
         c.category_id, 
