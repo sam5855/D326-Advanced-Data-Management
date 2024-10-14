@@ -24,12 +24,12 @@ SELECT * FROM summary_table;
 
 --Detailed Table--
 CREATE TABLE detailed_table (
-    category_id INT,
-    rental_id INT,
-    payment_id INT,
+    category_id INT, 
+    rental_id INT,  
+    payment_id INT, 
     name VARCHAR(50),
-    sale_date DATE,
-    amount DECIMAL(10, 2),
+    payment_date DATE, 
+    amount DECIMAL(10, 2), 
     FOREIGN KEY (category_id) REFERENCES category(category_id),
     FOREIGN KEY (rental_id) REFERENCES rental(rental_id),
     FOREIGN KEY (payment_id) REFERENCES payment(payment_id)
@@ -76,14 +76,13 @@ FROM
 
 
 --Detailed Table Data Entry--
---updated--
-INSERT INTO detailed_table (category_id, name, rental_id, payment_id, sale_date, amount)
+INSERT INTO detailed_table (category_id, name, rental_id, payment_id, payment_date, amount)
 SELECT 
     c.category_id, 
     c.name, 
-    r.rental_id,  -- Explicitly selecting rental_id from the rental table
+    r.rental_id, 
     p.payment_id,
-    p.payment_date AS sale_date,
+    p.payment_date,
     COALESCE(p.amount, 0) AS amount
 FROM 
     category c
@@ -108,7 +107,7 @@ SELECT
     rental_id, 
     payment_id, 
     name, 
-    sale_date, 
+    payment_date, 
     decimal_to_money(amount)
 FROM 
     detailed_table;
@@ -165,13 +164,13 @@ BEGIN
     DELETE FROM summary_table;
 
     -- Step 3: Repopulate detailed_table with every sale for every category
-    INSERT INTO detailed_table (category_id, name, rental_id, payment_id, sale_date, amount)
+    INSERT INTO detailed_table (category_id, name, rental_id, payment_id, payment_date, amount)
     SELECT 
         c.category_id, 
         c.name, 
         r.rental_id,
         p.payment_id,
-        p.payment_date AS sale_date,  -- Assigning payment_date to sale_date
+        p.payment_date,
         COALESCE(p.amount, 0) AS amount
     FROM 
         category c
